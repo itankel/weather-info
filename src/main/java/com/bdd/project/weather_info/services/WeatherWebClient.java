@@ -1,6 +1,7 @@
 package com.bdd.project.weather_info.services;
 
 import com.bdd.project.weather_info.configuration.ApiConfiguration;
+import com.bdd.project.weather_info.model.Region;
 import com.bdd.project.weather_info.model.Station;
 import com.bdd.project.weather_info.model.StationCollectedData;
 import lombok.extern.slf4j.Slf4j;
@@ -18,13 +19,14 @@ public class WeatherWebClient {
     private static final String GET_ALL_STATIONS_PATH = "/stations";
     //https://api.ims.gov.il/v1/envista/stations/%7b%25ST_ID%25%7d/data/latest
     private static final String GET_STATION_X_LATEST_DATA="/stations/{stationId}/data/latest";
+    //https://api.ims.gov.il/v1/envista/regions/%7b%25REG_ID%25%7d
+    private static final String GET_REGIONS_WITH_STATIONS="/regions";
     //https://api.ims.gov.il/v1/envista/stations/%7b%25ST_ID%25%7d/data/%7b%25CH_ID%25%7d/latest
     private static final String GET_STATION_X_LATEST_CHANNEL_X_DATA="/stations/{stationId}/data/{channelId}/latest";
     //https://api.ims.gov.il/v1/envista/stations/%7b%25ST_ID%25%7d/data/daily
     private static final String GET_STATION_X_DAILY_DATA="/stations/{stationId}/data/daily";
     //https://api.ims.gov.il/v1/envista/stations/%7b%25ST_ID%25%7d/data/daily
     private static final String GET_STATION_X_DAILY_CHANNEL_X_DATA="/stations/{stationId}/data/{channelId}/daily";
-
 
 
     private WebClient imsWebClient;
@@ -62,6 +64,17 @@ public class WeatherWebClient {
                 .collectList()
                 .block();
     }
+
+    public List<Region> getAllRegions(){
+        return imsWebClient.get()
+                .uri(GET_REGIONS_WITH_STATIONS)
+                .headers(h->h.set(imsParamName,imsParamValue))
+                .retrieve()
+                .bodyToFlux(Region.class)
+                .collectList()
+                .block();
+    }
+
 
     public StationCollectedData getStationLatestCollectedData(int stationId) {
             return imsWebClient.get()
